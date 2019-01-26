@@ -71,8 +71,10 @@ def update():
 		if 'text' in data.get('message'): 
 			if (data.get('message').get('text') == '/rules') or (data.get('message').get('text') == '/rules@Alfredcodex_bot'):
 				
+				chat_id_of_request = data.get('message').get('from').get('id')
+
 				PAYLOAD = {
-				'chat_id': GROUP_CHAT_ID,
+				'chat_id': chat_id_of_request,
 				'text': RULES
 				}
 
