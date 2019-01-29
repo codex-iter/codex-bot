@@ -55,7 +55,7 @@ def update():
 						r = requests.post(BASE_URL + "sendMessage", data=PAYLOAD)
 					else:
 						if args[0].isdecimal():
-							comic = getXKCD(comic_index)
+							comic = getXKCD(args[0])
 						else:
 							comic = None
 						if comic:
