@@ -22,6 +22,9 @@ def update():
 	message = data.get('message')
 	group_data = int(message.get('chat').get('id'))
 	
+	PAYLOAD = {
+		'chat_id': GROUP_CHAT_ID,
+	}
 
 	if group_data == GROUP_CHAT_ID:
 
