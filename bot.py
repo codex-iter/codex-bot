@@ -42,8 +42,8 @@ def update():
 			
 		
 		if 'text' in message.keys():
+			text = message.get('text')
 			if text.startswith("/"):
-				text = message.get('text')
 				[cmd, *args] = text[1:].split()
 				if (cmd == 'xkcd') or (cmd == 'xkcd@Alfredcodex_bot'):
 					if not args:
