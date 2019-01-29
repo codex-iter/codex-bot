@@ -10,6 +10,9 @@ app = Flask(__name__)
 TOKEN = os.environ.get('TOKEN')
 BASE_URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 GROUP_CHAT_ID = int(os.environ.get('group_chat_id'))
+PAYLOAD = {
+		'chat_id': GROUP_CHAT_ID,
+	}
 
 @app.route("/update", methods = ["POST"])
 def update():
@@ -18,6 +21,7 @@ def update():
 	data = request.get_json()
 	message = data.get('message')
 	group_data = int(message.get('chat').get('id'))
+	
 
 	if group_data == GROUP_CHAT_ID:
 
@@ -26,11 +30,8 @@ def update():
 		if 'new_chat_member' in message.keys():
 			new_member_name = message.get('new_chat_member').get('first_name')
 			new_member_id = message.get('new_chat_member').get('id')
-					
-			PAYLOAD = {
-			'chat_id': GROUP_CHAT_ID,
-			'text':  "Welcome to CODEX " + new_member_name + "!"
-			}
+			
+			PAYLOAD['text'] = f"Welcome to CODEX {new_member_name}"
 
 			PAYLOAD_FOR_USER = {
 			'chat_id': new_member_id,
