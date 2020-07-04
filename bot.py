@@ -98,7 +98,7 @@ def update():
 
 					PAYLOAD = {
 						'chat_id': chat_id_of_request,
-						'text' = valid_username
+						'text' : valid_username
 					}
 
 					r = requests.post(BASE_URL + 'sendMessage', data=PAYLOAD)
