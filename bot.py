@@ -34,8 +34,8 @@ def update():
     message = data.get('message')
     if message is None:
     	message = data.get('edited_message')
-    	
-    from_ = message.get('from').get('id')
+
+    from_ = int(message.get('from').get('id'))
     group_data = int(message.get('chat').get('id'))
 	
     PAYLOAD = {
