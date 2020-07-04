@@ -95,15 +95,29 @@ def update():
 					r = requests.post(BASE_URL + "sendMessage", data=PAYLOAD)
 				elif (cmd == 'register') or (cmd == 'register@Alfredcodex_bot'):
 
-					chat_id_of_request = message.get('from').get('id')
+					user_json = message.get('from')
+					chat_id_of_request = user_json.get('id')
 					logger.debug(args)
+					PAYLOAD = {
+							'chat_id': chat_id_of_request
+						}
 
 					valid_username = register_github(args[0])
 
-					PAYLOAD = {
-						'chat_id': chat_id_of_request,
-						'text' : valid_username
-					}
+					userdata = {"github_username" : args[0],
+								"telegram_username" : user_json.get("username"),
+								"full_name": f"{user_json.get('first_name')} {user_json.get('last_name')}"}
+
+					logger.debug(userdata)
+
+					if valid_username:
+						PAYLOAD = {
+							'text' : json.dumps(userdata)
+						}
+					else:
+						PAYLOAD = {
+							'text' : "Invalid username. Try again."
+						}
 
 					r = requests.post(BASE_URL + 'sendMessage', data=PAYLOAD)
 
