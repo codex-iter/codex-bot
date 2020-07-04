@@ -114,7 +114,7 @@ def update():
 						valid_username = validate_github(args[0])
 
 						if valid_username:
-							userdata = {"github_username" : args[0],
+							userdata = {"github_username" : valid_username,
 										"telegram_username" : user_json.get("username"),
 										"full_name": f"{user_json.get('first_name')} {user_json.get('last_name')}"}
 
@@ -155,21 +155,21 @@ def validate_github(github_username):
 
 	try:
 		if r.json()['login'].lower() == github_username.lower():
-			return True
+			return r.json()['login']
 	except KeyError:
 		return False
 
 
 def register_github(userdata):
 	try:
-		members.update_one({"github_username": userdata['github_username']}, 
+		up = members.update_one({"github_username": userdata['github_username']}, 
 							{"$set": userdata},
 							upsert=True)
 	except Exception as e:
 		logger.error(e)
 		return False
 
-	return True
+	return up
 
 
 if __name__ == '__main__':
