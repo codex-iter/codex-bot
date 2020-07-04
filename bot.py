@@ -32,13 +32,12 @@ def update():
     print(request.get_json())
     data = request.get_json()
     message = data.get('message')
+    if message is None:
+    	message = data.get('edited_message')
+    	
     from_ = message.get('from').get('id')
-    try:
-	    group_data = int(message.get('chat').get('id'))
-	except Exception as e:
-		logger.error(e)
-		return ""
-
+    group_data = int(message.get('chat').get('id'))
+	
     PAYLOAD = {
         'chat_id': GROUP_CHAT_ID,
     }
