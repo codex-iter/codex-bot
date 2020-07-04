@@ -1,15 +1,19 @@
+import os
+import requests
+from loguru import logger
+from random import randint
+from dotenv import load_dotenv
 from flask import Flask, request
 from gevent.pywsgi import WSGIServer
-from random import randint
 from settings import RULES, BOT_INTRO
-import requests
-import os
+
+load_dotenv()
 
 app = Flask(__name__)
 
 TOKEN = os.environ.get('TOKEN')
 BASE_URL = "https://api.telegram.org/bot{}/".format(TOKEN)
-GROUP_CHAT_ID = int(os.environ.get('group_chat_id'))
+GROUP_CHAT_ID = int(os.environ.get('GROUP_CHAT_ID'))
 PAYLOAD = {
 		'chat_id': GROUP_CHAT_ID,
 	}
@@ -66,7 +70,7 @@ def update():
 							PAYLOAD['text'] = "Not a valid comic index"
 							r = requests.post(BASE_URL + "sendMessage", data=PAYLOAD)
 		
-				if (cmd =='helpme') or (cmd == 'helpme@Alfredcodex_bot'):
+				elif (cmd =='helpme') or (cmd == 'helpme@Alfredcodex_bot'):
 					
 					PAYLOAD = {
 					'chat_id': GROUP_CHAT_ID,
@@ -75,7 +79,7 @@ def update():
 
 					r = requests.post(BASE_URL + "sendMessage", data=PAYLOAD)
 
-				if (cmd == 'rules') or (cmd == 'rules@Alfredcodex_bot'):
+				elif (cmd == 'rules') or (cmd == 'rules@Alfredcodex_bot'):
 					
 					chat_id_of_request = message.get('from').get('id')
 
@@ -85,6 +89,20 @@ def update():
 					}
 
 					r = requests.post(BASE_URL + "sendMessage", data=PAYLOAD)
+				elif (cmd == 'register') or (cmd == 'register@Alfredcodex_bot'):
+
+					chat_id_of_request = message.get('from').get('id')
+					logger.debug(args)
+
+					valid_username = register_github(args[0])
+
+					PAYLOAD = {
+						'chat_id': chat_id_of_request,
+						'text' = valid_username
+					}
+
+					r = requests.post(BASE_URL + 'sendMessage', data=PAYLOAD)
+
 	
 	return "200, OK"
 
@@ -100,6 +118,19 @@ def getXKCD(index):
 		return {'url': url, 'alt': alt, 'title': title}
 	else:
 		return None
+
+
+def register_github(github_username):
+	GITHUB_API = f'https://api.github.com/users/{github_username}'
+
+	r = requests.get(GITHUB_API)
+
+	try:
+		if r.json()['login'].lower() == github_username.lower():
+			return True
+	except KeyError:
+		return False
+
 
 if __name__ == '__main__':
 	port = int(os.environ.get('PORT', 5000))
