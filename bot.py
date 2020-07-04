@@ -102,22 +102,21 @@ def update():
 							'chat_id': chat_id_of_request
 						}
 
-					valid_username = register_github(args[0])
+					if len(args):
+						valid_username = register_github(args[0])
 
-					userdata = {"github_username" : args[0],
-								"telegram_username" : user_json.get("username"),
-								"full_name": f"{user_json.get('first_name')} {user_json.get('last_name')}"}
+						userdata = {"github_username" : args[0],
+									"telegram_username" : user_json.get("username"),
+									"full_name": f"{user_json.get('first_name')} {user_json.get('last_name')}"}
 
-					logger.debug(userdata)
+						logger.debug(userdata)
 
-					if valid_username:
-						PAYLOAD = {
-							'text' : json.dumps(userdata)
-						}
+						if valid_username:
+							PAYLOAD['text'] = json.dumps(userdata)
+						else:
+							PAYLOAD['text'] = "Invalid username. Try again."
 					else:
-						PAYLOAD = {
-							'text' : "Invalid username. Try again."
-						}
+						PAYLOAD['text'] = "No username given. Syntax is /register {GithubUsername}"
 
 					r = requests.post(BASE_URL + 'sendMessage', data=PAYLOAD)
 
