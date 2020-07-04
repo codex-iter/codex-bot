@@ -21,7 +21,7 @@ PAYLOAD = {
 		'chat_id': GROUP_CHAT_ID,
 	}
 
-client = MongoClient(MONGODB_URI)
+client = MongoClient(MONGODB_URI, retryWrites=False)
 db = client.get_default_database()
 members = db.members_test
 
@@ -120,7 +120,10 @@ def update():
 
 							logger.debug(userdata)
 							register = register_github(userdata)
-							PAYLOAD['text'] = f"Registered as {userdata['github_username']}"
+							if register:
+								PAYLOAD['text'] = f"Registered as {userdata['github_username']}"
+							else:
+								PAYLOAD['text'] = f"Could not register."
 						else:
 							PAYLOAD['text'] = "Invalid username. Try again."
 					else:
