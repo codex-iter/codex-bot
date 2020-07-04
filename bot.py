@@ -30,6 +30,9 @@ def update():
 		'chat_id': GROUP_CHAT_ID,
 	}
 
+	logger.debug(GROUP_CHAT_ID)
+	logger.debug(group_data)
+
 	if group_data == GROUP_CHAT_ID:
 
 		print("Working>>>>")
@@ -52,6 +55,7 @@ def update():
 		if 'text' in message.keys():
 			text = message.get('text')
 			if text.startswith("/"):
+				logger.debug(text)
 				[cmd, *args] = text[1:].split()
 				if (cmd == 'xkcd') or (cmd == 'xkcd@Alfredcodex_bot'):
 					if not args:
