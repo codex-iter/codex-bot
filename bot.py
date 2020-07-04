@@ -32,7 +32,12 @@ def update():
     print(request.get_json())
     data = request.get_json()
     message = data.get('message')
-    group_data = int(message.get('chat').get('id'))
+    from_ = message.get('from').get('id')
+    try:
+	    group_data = int(message.get('chat').get('id'))
+	except Exception as e:
+		logger.error(e)
+		return ""
 
     PAYLOAD = {
         'chat_id': GROUP_CHAT_ID,
@@ -41,7 +46,7 @@ def update():
     logger.debug(GROUP_CHAT_ID)
     logger.debug(group_data)
 
-    if group_data == GROUP_CHAT_ID:
+    if (group_data == GROUP_CHAT_ID) or (group_data == from_):
 
         print("Working>>>>")
 
