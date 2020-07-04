@@ -23,7 +23,7 @@ PAYLOAD = {
 
 client = MongoClient(MONGODB_URI, retryWrites=False)
 db = client.get_default_database()
-members = db.members_test
+members = db.telegram_members
 
 
 @app.route("/update", methods = ["POST"])
