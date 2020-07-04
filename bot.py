@@ -4,6 +4,7 @@ import requests
 from loguru import logger
 from random import randint
 from dotenv import load_dotenv
+from pymongo import MongoClient
 from flask import Flask, request
 from gevent.pywsgi import WSGIServer
 from settings import RULES, BOT_INTRO
@@ -13,11 +14,17 @@ load_dotenv()
 app = Flask(__name__)
 
 TOKEN = os.environ.get('TOKEN')
+MONGODB_URI = os.environ.get('MONGODB_URI')
 BASE_URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 GROUP_CHAT_ID = int(os.environ.get('GROUP_CHAT_ID'))
 PAYLOAD = {
 		'chat_id': GROUP_CHAT_ID,
 	}
+
+client = MongoClient(MONGODB_URI)
+db = client.get_default_database()
+members = db.members_test
+
 
 @app.route("/update", methods = ["POST"])
 def update():
@@ -104,16 +111,16 @@ def update():
 						}
 
 					if len(args):
-						valid_username = register_github(args[0])
-
-						userdata = {"github_username" : args[0],
-									"telegram_username" : user_json.get("username"),
-									"full_name": f"{user_json.get('first_name')} {user_json.get('last_name')}"}
-
-						logger.debug(userdata)
+						valid_username = validate_github(args[0])
 
 						if valid_username:
-							PAYLOAD['text'] = json.dumps(userdata)
+							userdata = {"github_username" : args[0],
+										"telegram_username" : user_json.get("username"),
+										"full_name": f"{user_json.get('first_name')} {user_json.get('last_name')}"}
+
+							logger.debug(userdata)
+							register = register_github(userdata)
+							PAYLOAD['text'] = f"Registered as {userdata['github_username']}"
 						else:
 							PAYLOAD['text'] = "Invalid username. Try again."
 					else:
@@ -138,7 +145,7 @@ def getXKCD(index):
 		return None
 
 
-def register_github(github_username):
+def validate_github(github_username):
 	GITHUB_API = f'https://api.github.com/users/{github_username}'
 
 	r = requests.get(GITHUB_API)
@@ -148,6 +155,18 @@ def register_github(github_username):
 			return True
 	except KeyError:
 		return False
+
+
+def register_github(userdata):
+	try:
+		members.update_one({"github_username": userdata['github_username']}, 
+							{"$set": userdata},
+							upsert=True)
+	except Exception as e:
+		logger.error(e)
+		return False
+
+	return True
 
 
 if __name__ == '__main__':

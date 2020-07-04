@@ -3,3 +3,4 @@ requests
 gevent
 python-dotenv
 loguru
+pymongo
