@@ -14,14 +14,14 @@ load_dotenv()
 app = Flask(__name__)
 
 TOKEN = os.environ.get('TOKEN')
-MONGODB_URI = os.environ.get('MONGODB_URI')
+DB_URI = os.environ.get('DB_URI')
 BASE_URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 GROUP_CHAT_ID = int(os.environ.get('GROUP_CHAT_ID'))
 PAYLOAD = {
     'chat_id': GROUP_CHAT_ID,
 }
 
-client = MongoClient(MONGODB_URI, retryWrites=False)
+client = MongoClient(DB_URI, retryWrites=False)
 db = client.get_default_database()
 members = db.telegram_members
 
