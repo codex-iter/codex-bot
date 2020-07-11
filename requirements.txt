@@ -4,3 +4,4 @@ gevent
 python-dotenv
 loguru
 pymongo
+dnspython
